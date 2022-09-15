@@ -20,7 +20,7 @@ app.post("/pay", [parseUrl, parseJson], (req, res) => {
     customerPhone: req.body.phone,
   };
   let params = {};
-  params["MID"] = "uDInid37587374103313";
+  params["MID"] = "eRhaHn98885992784587";
   params["WEBSITE"] = "WEBSTAGING";
   params["CHANNEL_ID"] = "WEB";
   params["INDUSTRY_TYPE_ID"] = "Retail";
@@ -31,7 +31,7 @@ app.post("/pay", [parseUrl, parseJson], (req, res) => {
   params["EMAIL"] = paymentDetails.customerEmail;
   params["TXN_AMOUNT"] = paymentDetails.amount;
 
-  checksumLib.genchecksum(params, "9lXKZ#MTKN13FDFp", (err, checksum) => {
+  checksumLib.genchecksum(params, "N7#ddlHuus#gjJbb", (err, checksum) => {
     let url = "https://securegw-stage.paytm.in/order/process";
     let formFields = "";
     for (x in params) {
@@ -58,30 +58,67 @@ app.post("/pay", [parseUrl, parseJson], (req, res) => {
     res.end();
   });
 
-
-
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'wildlifedonation06@gmail.com',
-      pass: 'thebeast@06'
-    }
-  });
+  "use strict";
   
-  var mailOptions = {
-    from: 'wildlifedonation06@gmail.com',
-    to: paymentDetails.customerEmail,
-    subject: 'Thank You',
-    text: `Your donation of ₹` + paymentDetails.amount +` has been recieved`
-  };
+  // async..await is not allowed in global scope, must use a wrapper
+  async function main() {
+    // Generate test SMTP service account from ethereal.email
+    // Only needed if you don't have a real mail account for testing
+    let testAccount = await nodemailer.createTestAccount();
   
-  transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: testAccount.user, // generated ethereal user
+        pass: testAccount.pass, // generated ethereal password
+      },
+    });
+  
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+      from: 'sppspps666@gmail.com', // sender address
+      to: paymentDetails.customerEmail, // list of receivers
+      subject: "Hello ✔", // Subject line
+      text: "Hello world?", // plain text body
+      html: "<b>Hello world?</b>", // html body
+    });
+  
+    console.log("Message sent: %s", info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+  
+    // Preview only available when sending through an Ethereal account
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  }
+  
+  main().catch(console.error);
+  
+
+  // var transporter = nodemailer.createTransport({
+  //   service: 'gmail',
+  //   auth: {
+  //     user: 'sppspps666@gmail.com',
+  //     pass: 'Sha739402@'
+  //   }
+  // });
+  
+  // var mailOptions = {
+  //   from: 'sppspps666@gmail.com',
+  //   to: paymentDetails.customerEmail,
+  //   subject: 'Thank You',
+  //   text: `Your donation of Rs.` + paymentDetails.amount +` has been recieved`
+  // }; 
+  
+  // transporter.sendMail(mailOptions, function(error, info){
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     console.log('Email sent: ' + info.response);
+  //   }
+  // });
 });
 
 
